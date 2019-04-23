@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Checkbook</string>
+    <string name="title_activity_purchase_history">Purchase History</string>
+    <string name="title_activity_add_purchase">Add Purchase</string>
+    <string name="title_activity_edit_purchase">Edit Purchase</string>
+    <string name="navigation_drawer_open">Open navigation</string>
+    <string name="navigation_drawer_close">Close navigation</string>
+    <string name="nav_header_title">Menu</string>
+
+    <string name="save_btn">Save</string>
+    <string name="cancel_btn">Cancel</string>
+
+    <string name="add_purchase_title">Add a Purchase to the Checkbook</string>
+    <string name="add_purchase_date_hint">Date</string>
+    <string name="add_purchase_date_picker_btn">Pick Date</string>
+    <string name="add_purchase_amount_hint">Amount</string>
+    <string name="add_purchase_rec_hint">Recipient</string>
+    <string name="add_purchase_note_hint">Notes</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
