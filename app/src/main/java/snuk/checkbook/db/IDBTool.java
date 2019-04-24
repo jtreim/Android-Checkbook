@@ -5,11 +5,11 @@ import android.content.Context;
 import java.util.Vector;
 
 public interface IDBTool {
-	DBError load();
-	DBError getPurchase(String id, Purchase result);
-	DBError getAllPurchases(Vector<Purchase> result);
-	DBError save();
-	DBError addPurchase(Purchase p);
-	DBError updatePurchase(Purchase p);
-	DBError deletePurchase(Purchase p);
+	void load() throws DBError;
+	Purchase getPurchase(String id) throws DBError;
+	Vector<Purchase> getAllPurchases() throws DBError;
+	void save() throws DBError;
+	void addPurchase(Purchase p) throws DBError;
+	void updatePurchase(Purchase p) throws DBError;
+	void deletePurchase(String id) throws DBError;
 }

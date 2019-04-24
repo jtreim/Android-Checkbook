@@ -1,17 +1,17 @@
 package snuk.checkbook.db;
 
-public class DBError {
-	enum DBErrorCode { ERROR, INVALID_VALUE, NO_VALUE, NO_CHANGE, NO_DB, SUCCESS }
+public class DBError extends Exception {
+	public enum ErrorCode { ERROR, INVALID_VALUE, NO_VALUE, NO_CHANGE, NO_DB }
 
-	public DBErrorCode code;
+	public ErrorCode code;
 	public String msg;
 
-	public DBError(DBErrorCode code, String msg){
+	public DBError(ErrorCode code, String msg){
 		this.code = code;
 		this.msg = msg;
 	}
 
-	public DBError(DBErrorCode code){
+	public DBError(ErrorCode code){
 		this(code, "");
 	}
 

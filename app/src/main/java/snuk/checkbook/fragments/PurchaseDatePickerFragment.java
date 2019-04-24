@@ -24,16 +24,14 @@ import snuk.checkbook.db.Purchase;
 
 public class PurchaseDatePickerFragment extends DialogFragment {
 
-	private Calendar calendar = null;
 	private EditText dateText = null;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		dateText = (EditText)getActivity().findViewById(R.id.add_purchase_date);
-		calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH);
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		int year = Purchase.CALENDAR.get(Calendar.YEAR);
+		int month = Purchase.CALENDAR.get(Calendar.MONTH);
+		int day = Purchase.CALENDAR.get(Calendar.DAY_OF_MONTH);
 
 		return new DatePickerDialog(getActivity(), dateSetListener, year, month, day);
 	}
@@ -42,8 +40,8 @@ public class PurchaseDatePickerFragment extends DialogFragment {
 	private DatePickerDialog.OnDateSetListener dateSetListener =
 		new DatePickerDialog.OnDateSetListener() {
 			public void onDateSet(DatePicker view, int year, int month, int day){
-				calendar.set(year, month, day);
-				Date date = calendar.getTime();
+				Purchase.CALENDAR.set(year, month, day);
+				Date date = Purchase.CALENDAR.getTime();
 				if(dateText != null) {
 					dateText.setText(Purchase.DATE_FORMAT.format(date));
 				}

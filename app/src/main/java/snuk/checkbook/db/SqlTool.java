@@ -7,14 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-class SqlTool implements IDBTool {
+public class SqlTool implements IDBTool {
 
 	// Private Table Entry class
 	private static final class PurchaseEntry implements BaseColumns {
@@ -57,7 +56,7 @@ class SqlTool implements IDBTool {
 
 	// Make the tool a singleton
 	private static final SqlTool ourInstance = new SqlTool();
-	static SqlTool getInstance() {
+	public static SqlTool getInstance() {
 		return ourInstance;
 	}
 	private PurchaseDbHelper dbHelper;
@@ -71,12 +70,13 @@ class SqlTool implements IDBTool {
 	}
 
 	@Override
-	public DBError load() {
+	public void load() throws DBError {
 		DBError err = null;
 		if(dbHelper == null) {
-			err = new DBError(DBError.DBErrorCode.NO_DB, "No DBHelper set. You must pass in context for this tool first.");
+			throw new DBError(DBError.ErrorCode.NO_DB, "No DBHelper set. You must pass in context for this tool first.");
 
 		} else {
+
 			SQLiteDatabase db = dbHelper.getReadableDatabase();
 			boolean loaded = false;
 			Cursor cursor = db.rawQuery("SELECT * from " + PurchaseEntry.TABLE_NAME, null);
@@ -93,44 +93,36 @@ class SqlTool implements IDBTool {
 					data.put(id, new Purchase(id, date, amount, rec, note));
 					loaded = true;
 				} catch (ParseException e) {
-					err = new DBError(DBError.DBErrorCode.INVALID_VALUE, "Unable to parse date format. Skipping...");
+					e.printStackTrace();
 				}
 			}
 			cursor.close();
 
 			if(!loaded){
-				err = new DBError(DBError.DBErrorCode.NO_VALUE, "No data loaded from this db.");
-			} else if (err == null) {
-				err = new DBError(DBError.DBErrorCode.SUCCESS);
+				throw new DBError(DBError.ErrorCode.NO_VALUE, "No data loaded from this db.");
 			}
 		}
-
-		return err;
 	}
 
 	@Override
-	public DBError getPurchase(String id, Purchase result) {
-		DBError err = null;
+	public Purchase getPurchase(String id) throws DBError {
+		Purchase result;
+
 		if(!data.containsKey(id)){
-			err = new DBError(DBError.DBErrorCode.NO_VALUE, "Unable to load purchase with id: " + id);
-			result = null;
+			throw new DBError(DBError.ErrorCode.NO_VALUE, "Unable to load purchase with id: " + id);
 		}	else {
-			err = new DBError(DBError.DBErrorCode.SUCCESS);
 			result = data.get(id);
 		}
 
-		return err;
+		return result;
 	}
 
 	@Override
-	public DBError getAllPurchases(Vector<Purchase> result) {
-		DBError err = null;
+	public Vector<Purchase> getAllPurchases() throws DBError {
+		Vector<Purchase> result = new Vector<>();
 		if(data.isEmpty()){
-			err = new DBError(DBError.DBErrorCode.NO_VALUE, "No purchases have been loaded.");
+			throw new DBError(DBError.ErrorCode.NO_VALUE, "No purchases have been loaded.");
 		} else {
-			err = new DBError(DBError.DBErrorCode.SUCCESS);
-			result.clear();
-
 			Iterator itr = data.entrySet().iterator();
 			while(itr.hasNext()){
 				Map.Entry pair = (Map.Entry)itr.next();
@@ -139,45 +131,47 @@ class SqlTool implements IDBTool {
 			}
 		}
 
-		return err;
+		return result;
 	}
 
 	@Override
-	public DBError save() {
-		DBError err = null;
+	public void save() throws DBError {
 		if(dbHelper == null) {
-			err = new DBError(DBError.DBErrorCode.NO_DB, "No DBHelper set. You must pass in context for this tool first.");
+			throw new DBError(DBError.ErrorCode.NO_DB, "No DBHelper set. You must pass in context for this tool first.");
 
 		} else {
 			// TODO: add or update all data into sqlite DB.
-			err = new DBError(DBError.DBErrorCode.SUCCESS);
 		}
-		return err;
 	}
 
 	@Override
-	public DBError addPurchase(Purchase p) {
-		data.put(p.getID(), p);
-		return new DBError(DBError.DBErrorCode.SUCCESS);
-	}
-
-	@Override
-	public DBError updatePurchase(Purchase p) {
-		if(!data.containsKey(p.getID())){
-			return new DBError(DBError.DBErrorCode.NO_VALUE, "No purchase with that id found.");
+	public void addPurchase(Purchase p) throws DBError {
+		if(p.getAmount() == 0){
+			throw new DBError(DBError.ErrorCode.INVALID_VALUE, "Amount for new purchase can\'t be 0.");
+		} else if(p.getDate() == null){
+			throw new DBError(DBError.ErrorCode.INVALID_VALUE, "Missing date for new purchase.");
+		} else if(data.containsKey(p.getID())){
+			throw new DBError(DBError.ErrorCode.INVALID_VALUE, "Duplicate ID for new purchase.");
 		}
 
 		data.put(p.getID(), p);
-		return new DBError(DBError.DBErrorCode.SUCCESS);
 	}
 
 	@Override
-	public DBError deletePurchase(Purchase p) {
+	public void updatePurchase(Purchase p) throws DBError {
 		if(!data.containsKey(p.getID())){
-			return new DBError(DBError.DBErrorCode.NO_VALUE, "No purchase with that id found.");
+			throw new DBError(DBError.ErrorCode.NO_VALUE, "No purchase with that id found.");
 		}
 
-		data.remove(p.getID());
-		return new DBError(DBError.DBErrorCode.SUCCESS);
+		data.put(p.getID(), p);
+	}
+
+	@Override
+	public void deletePurchase(String id) throws DBError {
+		if(!data.containsKey(id)){
+			throw new DBError(DBError.ErrorCode.NO_VALUE, "No purchase with that id found.");
+		}
+
+		data.remove(id);
 	}
 }

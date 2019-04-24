@@ -1,6 +1,7 @@
 package snuk.checkbook.db;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,6 +9,9 @@ import java.util.UUID;
 
 public class Purchase {
 	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+	public static final Calendar CALENDAR = Calendar.getInstance();
+	public static final DecimalFormat AMOUNT_FORMAT = new DecimalFormat("0.00");
+
 
 	private String mId;
 	private Date mDate;
@@ -17,7 +21,7 @@ public class Purchase {
 	public Purchase(String id, Date date, double amount, String rec, String note){
 		this.mId = id;
 		this.mDate = date;
-		this.mAmount = amount;
+		this.mAmount = Double.parseDouble(AMOUNT_FORMAT.format(amount));
 		this.mRecipient = rec;
 		this.mNote = note;
 	}
